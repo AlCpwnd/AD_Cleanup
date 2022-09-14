@@ -68,7 +68,7 @@ if($User){
     }
     if($Users){
         Show-Status Warning "$($Users.Count) user(s) found:"
-        $Users | Select-Object Name,SamAccountName,LastLogonDate,CanonicalName
+        $Users | Select-Object Name,SamAccountName,LastLogonDate,CanonicalName | Out-Host
         if($Report){
             Export-Report -Scope User -Data $Users
         }
@@ -84,7 +84,7 @@ if($Server -or $Computer){
         $ExpiredWS = $Workstations | Where-Object{$_.LastLogonDate -lt $Today.AddMonths(-$ComputerGracePeriod)}
         if($ExpiredWS){
             Show-Status Warning "$($ExpiredWS.Count) workstation(s) found:"
-            $ExpiredWS | Select-Object Name,LastLogonDate,OperatingSystem
+            $ExpiredWS | Select-Object Name,LastLogonDate,OperatingSystem | Out-Host
             if($Report){
                 # $FilePath = "$PSScriptRoot\$(Get-Date -format yyyyMMdd)_$Domain`_WorkSations.csv"
                 # $ExpiredWS | Export-Csv -Path $FilePath -NoTypeInformation
@@ -99,7 +99,7 @@ if($Server -or $Computer){
         $ExpiredServers = $Servers | Where-Object{$_.LastLogonDate -lt $Today.AddMonths(-$ServerGracePeriod)}
         if($ExpiredServers){
             Show-Status Warning "$($ExpiredServers.Count) server(s) found:"
-            $ExpiredServers | Select-Object Name,LastLogonDate,OperatingSystem
+            $ExpiredServers | Select-Object Name,LastLogonDate,OperatingSystem | Out-Host
             if($Report){
                 # $FilePath = "$PSScriptRoot\$(Get-Date -format yyyyMMdd)_$Domain`_Servers.csv"
                 # $ExpiredServers | Export-Csv -Path $FilePath -NoTypeInformation
@@ -111,3 +111,4 @@ if($Server -or $Computer){
         }
     }
 }
+Write-Host "`n`t___End script___`n"
