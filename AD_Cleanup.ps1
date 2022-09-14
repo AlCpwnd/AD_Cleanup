@@ -38,11 +38,20 @@ function Export-Report{
         [ValidateSet("User","WorkStation","Server")]$Scope,
         $Data
     )
-    Export-Csv -Path "$PSScriptRoot\$(Get-Date -format yyyyMMdd)_$Domain`_$Scope.csv" -NoTypeInformation
+    $FilePath = "$PSScriptRoot\$(Get-Date -format yyyyMMdd)_$Domain`_$Scope.csv"
+    Export-Csv -Path $FilePath -NoTypeInformation
     Show-Status Warning "$Scope report exported to: $FilePath"
 }
 
 # Code:
+Write-Host "`n`t___Initiating script___`n"
+Show-Status Info "Domain detected: $($Domain.Replace("_","."))"
+
+if(!$User -and !$Computer -and !$Server){
+    Show-Status Error "No options were chosen, ending the script."
+    return
+}
+
 if($User){
     $Users = Get-ADUser -Filter * -Properties LastLogonDate,CanonicalName | Where-Object{$_.LastLogonDate -lt $Today.AddMonths(-$UserGracePeriod)}
     if(!$IncludeExceptions){
@@ -52,8 +61,7 @@ if($User){
         Show-Status Warning "$($Users.Count) user(s) found:"
         $Users | Select-Object Name,SamAccountName,LastLogonDate,CanonicalName
         if($Report){
-            # $Users | Export-Csv -Path "$PSScriptRoot\$(Get-Date -format yyyyMMdd)_$Domain`_Users.csv" -NoTypeInformation
-            Export-Report -Scope User -Data $User
+            Export-Report -Scope User -Data $Users
         }
     }else{
         Show-Status Info "No users found."
@@ -69,9 +77,10 @@ if($Server -or $Computer){
             Show-Status Warning "$($ExpiredWS.Count) workstation(s) found:"
             $ExpiredWS | Select-Object Name,LastLogonDate,OperatingSystem
             if($Report){
-                $FilePath = "$PSScriptRoot\$(Get-Date -format yyyyMMdd)_$Domain`_WorkSations.csv"
-                $ExpiredWS | Export-Csv -Path $FilePath -NoTypeInformation
-                Show-Status Warning "Workstation report exported to: $FilePath"
+                # $FilePath = "$PSScriptRoot\$(Get-Date -format yyyyMMdd)_$Domain`_WorkSations.csv"
+                # $ExpiredWS | Export-Csv -Path $FilePath -NoTypeInformation
+                # Show-Status Warning "Workstation report exported to: $FilePath"
+                Export-Report -Scope WorkStation -Data $ExpiredWS
             }
         }else{
             Show-Status Info "No workstations found."
@@ -83,9 +92,10 @@ if($Server -or $Computer){
             Show-Status Warning "$($ExpiredServers.Count) server(s) found:"
             $ExpiredServers | Select-Object Name,LastLogonDate,OperatingSystem
             if($Report){
-                $FilePath = "$PSScriptRoot\$(Get-Date -format yyyyMMdd)_$Domain`_Servers.csv"
-                $ExpiredServers | Export-Csv -Path $FilePath -NoTypeInformation
-                Show-Status Warning "Server report exported to: $FilePath"
+                # $FilePath = "$PSScriptRoot\$(Get-Date -format yyyyMMdd)_$Domain`_Servers.csv"
+                # $ExpiredServers | Export-Csv -Path $FilePath -NoTypeInformation
+                # Show-Status Warning "Server report exported to: $FilePath"
+                Export-Report -Scope Server -Data $ExpiredServers
             }
         }else{
             Show-Status info "No servers found."
