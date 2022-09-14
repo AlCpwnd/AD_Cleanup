@@ -1,10 +1,10 @@
-# param(
-#     [Switch]$User,
-#     [Switch]$Computer,
-#     [Switch]$Server,
-#     [Switch]$IncludeExceptions,
-#     [Switch]$Report
-# )
+param(
+    [Switch]$User,
+    [Switch]$Computer,
+    [Switch]$Server,
+    [Switch]$IncludeExceptions,
+    [Switch]$Report
+)
 
 #Requires -Modules ActiveDirectory
 
@@ -17,8 +17,6 @@ $Today = Get-Date
 
 $UserExceptions = "Guest","DefaultAccount","krbtgt","Sync_" # Exceptions to the search. Either default accounts or sync accounts
 
-$Domain = (Get-ADDomain).Forest.Replace(".","_")
-
 $User = $true
 $Computer = $true
 $Server = $true
@@ -28,13 +26,13 @@ function Show-Status{
     Param(
         [Parameter(Mandatory,Position=0)][ValidateSet("Info","Warning","Error")][String]$Type,
         [Parameter(Mandatory,Position=1)][String]$Message
-    )
-    switch($Type){
-        "Info" {$param = @{Object = "`t[i] $Message"}}
-        "Warning" {$param = @{Object = "`t[!] $Message"; ForegroundColor = "Yellow"}}
-        "Error" {$param = @{Object = "`t[x] $Message"; ForegroundColor = "Red"}}
-    }
-    Write-Host @param
+        )
+        switch($Type){
+            "Info" {$param = @{Object = "`t[i] $Message"}}
+            "Warning" {$param = @{Object = "`t[!] $Message"; ForegroundColor = "Yellow"}}
+            "Error" {$param = @{Object = "`t[x] $Message"; ForegroundColor = "Red"}}
+        }
+        Write-Host @param
 }
 
 function Export-Report{
@@ -49,7 +47,14 @@ function Export-Report{
 
 # Code:
 Write-Host "`n`t___Initiating script___`n"
-Show-Status Info "Domain detected: $($Domain.Replace("_","."))"
+
+try{
+    $Domain = (Get-ADDomain).Forest.Replace(".","_")
+    Show-Status Info "Domain detected: $($Domain.Replace("_","."))"
+}catch{
+    Show-Status Error "No domain detected. Aborting."
+    return
+}
 
 if(!$User -and !$Computer -and !$Server){
     Show-Status Error "No options were chosen, ending the script."
