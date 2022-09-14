@@ -1,0 +1,1 @@
+$Machines = Get-ADComputer -Filter * -Properties LastLogonDate,OperatingSystem

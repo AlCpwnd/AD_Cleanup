@@ -1,10 +1,10 @@
-param(
-    [Switch]$User,
-    [Switch]$Computer,
-    [Switch]$Server,
-    [Switch]$IncludeExceptions,
-    [Switch]$Report
-)
+# param(
+#     [Switch]$User,
+#     [Switch]$Computer,
+#     [Switch]$Server,
+#     [Switch]$IncludeExceptions,
+#     [Switch]$Report
+# )
 
 #Requires -Modules ActiveDirectory
 
@@ -18,6 +18,10 @@ $Today = Get-Date
 $UserExceptions = "Guest","DefaultAccount","krbtgt","Sync_" # Exceptions to the search. Either default accounts or sync accounts
 
 $Domain = (Get-ADDomain).Forest.Replace(".","_")
+
+$User = $true
+$Computer = $true
+$Server = $true
 
 # Functions:
 function Show-Status{
