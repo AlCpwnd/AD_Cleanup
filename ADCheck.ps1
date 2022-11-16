@@ -42,5 +42,5 @@ if($6m){
 }
 if($1y){
     Write-Host ""
-    Write-Info Warning $1y.Count "Device(s) found that haven't connected in the last year."
+    Write-Info Error $1y.Count "Device(s) found that haven't connected in the last year."
 }
