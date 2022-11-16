@@ -8,13 +8,12 @@ function Write-Info{
         [Parameter(Mandatory,Position=2)]$Message
     )
     switch ($Type) {
-        "Info" {Write-Host "`t[$Number]" -ForegroundColor $UIInfo.BackgroundColor -BackgroundColor $UIInfo.ForegroundColor -NoNewline; Write-Host " $Message"}
+        "Info" {Write-Host "`t[" -NoNewline; Write-Host "$Number" -ForegroundColor $UIInfo.BackgroundColor -BackgroundColor $UIInfo.ForegroundColor -NoNewline; Write-Host "] $Message"}
         "Error" {Write-Host "`t[" -NoNewline; Write-Host $Number -ForegroundColor $HostInfo.ErrorForegroundColor -BackgroundColor $HostInfo.ErrorBackgroundColor -NoNewline; Write-Host "] $Message"}
         "Warning" {Write-Host "`t[" -NoNewline; Write-Host $Number -ForegroundColor $HostInfo.WarningForegroundColor -BackgroundColor $HostInfo.WarningBackgroundColor -NoNewline; Write-Host "] $Message"}
 
     }
 }
-# [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; iex (iwr https://raw.githubusercontent.com/AlCpwnd/AD_Cleanup/main/ADCheck.ps1).Content
 
 Write-Host ""
 Write-Host ""
@@ -31,7 +30,7 @@ if(!(Get-Module -Name ActiveDirectory)){ # Module verification
     }
 }
 
-Write-Info ""
+Write-Host ""
 Write-Info Info $Devices.Count "total devices found."
     
 $Today = Get-Date
